@@ -1,9 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.api.health import router as health_router
-from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI(
     title="KAIRO Enterprise AI Platform",
@@ -11,6 +10,7 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Allow React frontend to access the backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
