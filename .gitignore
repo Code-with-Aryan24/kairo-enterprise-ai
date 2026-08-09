@@ -1,0 +1,57 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual Environment
+venv/
+.venv/
+
+# Environment Variables
+.env
+
+# ===========================
+# Node.js
+# ===========================
+node_modules/
+dist/
+build/
+
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+
+# ===========================
+# Operating System
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# Database
+# ===========================
+*.db
+*.sqlite3
+
+# ===========================
+# Future Vector Stores
+# ===========================
+chroma_db/
+vector_store/
+
+# ===========================
+# Logs
+# ===========================
+*.log
