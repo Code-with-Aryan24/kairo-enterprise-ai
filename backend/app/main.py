@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.documents import router as documents_router
+from app.api.search import router as search_router
 from app.api.routes import router
 from app.api.health import router as health_router
 
@@ -24,3 +25,5 @@ app.add_middleware(
 # Register API routes
 app.include_router(router)
 app.include_router(health_router)
+app.include_router(documents_router)
+app.include_router(search_router)

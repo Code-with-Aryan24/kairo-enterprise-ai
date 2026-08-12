@@ -1,0 +1,23 @@
+♛ ♛ ♛
+HACK-4-CROWN
+TEAM NAME :
+TEAM MEMBERS :
+ Forging The Empire of Tomorrow 
+
+Describe the problem your hackathon project solves here
+PROBLEM STATEMENT
+
+Outline your solution approach and methodology here
+SOLUTION
+
+Present your system architecture here
+ARCHITECTURE
+
+Present your technical approach and its flow here
+TECHNICAL APPROACH
+
+Key Feature / Unique Selling Point
+FEATURE / USP
+
+THANK YOU!
+HACK-4-CROWN

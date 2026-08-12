@@ -1,0 +1,45 @@
+Transaction Acknowledgment
+Transaction Acknowledgment
+Payment Status
+Payment Status
+Success
+Success
+IBPS Transaction ID
+IBPS Transaction ID
+csaxvijul26LV2710459991v1
+csaxvijul26LV2710459991v1
+Payment Date
+Payment Date
+11-08-2026 23:35:03
+11-08-2026 23:35:03
+Application Fee (Rs.Ps)
+Application Fee (Rs.Ps)
+Rs.
+Rs.850.00
+850.00
+Payment Gateway Transaction ID
+Payment Gateway Transaction ID
+DHD5QY01SMOGN8
+DHD5QY01SMOGN8
+Dear Candidate,
+Dear Candidate,
+Thank you for your payment. Please refer details of this transaction:
+Thank you for your payment. Please refer details of this transaction:
+ 
+     Print     
+     Print     
+ 
+Please quote your Transaction ID for any queries relating to this request.
+Please quote your Transaction ID for any queries relating to this request.
+Kindly note:
+Kindly note:
+To print your E-Receipt or your Application after a successful payment, please visit the Registration Portal at
+To print your E-Receipt or your Application after a successful payment, please visit the Registration Portal at
+ibpsreg.ibps.in/csaxvijul26
+ibpsreg.ibps.in/csaxvijul26
+You also receive an SMS / Email notification with regards to your application.
+You also receive an SMS / Email notification with regards to your application.
+8/11/26, 11:35 PM
+:: BillDesk Payment Gateway ::
+https://www.billdesk.com/pgidsk/pgmerc/IBPSNFResponse.jsp
+1/1

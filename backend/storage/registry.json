@@ -1,0 +1,54 @@
+[
+  {
+    "document_id": "f8d31051-6f9f-47ad-b492-52a6f072b8fd",
+    "filename": "Profile.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 48233,
+    "status": "uploaded",
+    "stored_filename": "f8d31051-6f9f-47ad-b492-52a6f072b8fd_Profile.pdf"
+  },
+  {
+    "document_id": "49ada39a-1467-44cd-859e-9681aedfd70d",
+    "filename": "_Aryan Pandey - TechMahindra - Resume.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 122859,
+    "status": "uploaded",
+    "stored_filename": "49ada39a-1467-44cd-859e-9681aedfd70d__Aryan Pandey - TechMahindra - Resume.pdf"
+  },
+  {
+    "document_id": "5b4f227f-7cab-44a0-98ec-c241044fb855",
+    "filename": "tempplate.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 821837,
+    "status": "processed",
+    "stored_filename": "5b4f227f-7cab-44a0-98ec-c241044fb855_tempplate.pdf",
+    "processed_filename": "5b4f227f-7cab-44a0-98ec-c241044fb855.txt",
+    "text_length": 413
+  },
+  {
+    "document_id": "287198bd-0cf6-4bf4-b447-9e249f4b60f6",
+    "filename": "payment isha 11.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 257639,
+    "status": "processed",
+    "stored_filename": "287198bd-0cf6-4bf4-b447-9e249f4b60f6_payment isha 11.pdf",
+    "processed_filename": "287198bd-0cf6-4bf4-b447-9e249f4b60f6.txt",
+    "text_length": 1352,
+    "chunk_count": 2,
+    "chunk_filename": "287198bd-0cf6-4bf4-b447-9e249f4b60f6.json"
+  },
+  {
+    "document_id": "d9b3829e-2da9-4992-9f69-7a89514f8943",
+    "filename": "Profile.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 48233,
+    "status": "processed",
+    "stored_filename": "d9b3829e-2da9-4992-9f69-7a89514f8943_Profile.pdf",
+    "processed_filename": "d9b3829e-2da9-4992-9f69-7a89514f8943.txt",
+    "text_length": 1721,
+    "chunk_count": 3,
+    "chunk_filename": "d9b3829e-2da9-4992-9f69-7a89514f8943.json",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimensions": 384
+  }
+]
