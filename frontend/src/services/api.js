@@ -39,3 +39,26 @@ export async function getDocuments() {
 
   return response.json();
 }
+
+export async function chatWithKairo(query, topK = 3) {
+  const response = await fetch(`${BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      top_k: topK,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+
+    throw new Error(
+      errorData.detail || "Failed to get a response from KAIRO."
+    );
+  }
+
+  return response.json();
+}

@@ -49,7 +49,7 @@ def load_chunks():
     return chunks
 
 
-def retrieve(query, top_k=3):
+def retrieve(query, top_k=3, min_score=0.35):
     query_embedding = embed_text(query)
 
     chunks = load_chunks()
@@ -75,5 +75,11 @@ def retrieve(query, top_k=3):
         key=lambda item: item["score"],
         reverse=True,
     )
+
+    scored_chunks = [
+    chunk
+    for chunk in scored_chunks
+    if chunk["score"] >= min_score
+   ]
 
     return scored_chunks[:top_k]
