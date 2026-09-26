@@ -124,13 +124,14 @@ def generate_rag_answer(query: str, top_k: int = 3):
     )
 
     sources = [
-        {
-            "document_id": context["document_id"],
-            "chunk_id": context["chunk_id"],
-            "score": context["score"],
-        }
-        for context in contexts
-    ]
+    {
+        "document_id": context["document_id"],
+        "chunk_id": context["chunk_id"],
+        "page_numbers": context.get("page_numbers", []),
+        "score": context["score"],
+    }
+    for context in contexts
+]
 
     return {
         "answer": answer,

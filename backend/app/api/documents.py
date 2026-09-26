@@ -1,4 +1,5 @@
 import json
+
 from pathlib import Path
 from uuid import uuid4
 
@@ -12,10 +13,12 @@ router = APIRouter(
     tags=["Documents"],
 )
 
+
 STORAGE_DIR = Path("storage/documents")
 PROCESSED_DIR = Path("storage/processed")
 CHUNKS_DIR = Path("storage/chunks")
 REGISTRY_FILE = Path("storage/registry.json")
+
 
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -97,7 +100,8 @@ async def upload_document(file: UploadFile = File(...)):
         "chunks": [
             {
                 "chunk_id": index,
-                "text": chunk,
+                "text": chunk["text"],
+                "page_numbers": chunk["page_numbers"],
                 "embedding": embeddings[index],
             }
             for index, chunk in enumerate(chunks)

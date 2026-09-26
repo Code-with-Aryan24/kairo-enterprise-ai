@@ -39,9 +39,14 @@ def process_document(file_path):
         for page in pages
     )
 
-    chunks = chunk_text(extracted_text)
+    chunks = chunk_text(pages)
 
-    embeddings = embed_chunks(chunks)
+    chunk_texts = [
+        chunk["text"]
+        for chunk in chunks
+    ]
+
+    embeddings = embed_chunks(chunk_texts)
 
     return {
         "text": extracted_text,

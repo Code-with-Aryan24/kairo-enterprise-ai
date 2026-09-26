@@ -1,4 +1,5 @@
 import json
+
 from pathlib import Path
 
 import numpy as np
@@ -42,6 +43,7 @@ def load_chunks():
                     "document_id": data["document_id"],
                     "chunk_id": chunk["chunk_id"],
                     "text": chunk["text"],
+                    "page_numbers": chunk.get("page_numbers", []),
                     "embedding": chunk["embedding"],
                 }
             )
@@ -49,7 +51,7 @@ def load_chunks():
     return chunks
 
 
-def retrieve(query, top_k=3, min_score=0.35):
+def retrieve(query, top_k=3, min_score=0.30):
     query_embedding = embed_text(query)
 
     chunks = load_chunks()
@@ -67,6 +69,7 @@ def retrieve(query, top_k=3, min_score=0.35):
                 "document_id": chunk["document_id"],
                 "chunk_id": chunk["chunk_id"],
                 "text": chunk["text"],
+                "page_numbers": chunk["page_numbers"],
                 "score": score,
             }
         )
@@ -77,9 +80,9 @@ def retrieve(query, top_k=3, min_score=0.35):
     )
 
     scored_chunks = [
-    chunk
-    for chunk in scored_chunks
-    if chunk["score"] >= min_score
-   ]
+        chunk
+        for chunk in scored_chunks
+        if chunk["score"] >= min_score
+    ]
 
     return scored_chunks[:top_k]

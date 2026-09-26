@@ -50,5 +50,33 @@
     "chunk_filename": "d9b3829e-2da9-4992-9f69-7a89514f8943.json",
     "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
     "embedding_dimensions": 384
+  },
+  {
+    "document_id": "8558807d-dfc6-4e83-a25e-1360f1bbbede",
+    "filename": "ARYAN PANDEY- Readyly Resume1.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 126583,
+    "status": "processed",
+    "stored_filename": "8558807d-dfc6-4e83-a25e-1360f1bbbede_ARYAN PANDEY- Readyly Resume1.pdf",
+    "processed_filename": "8558807d-dfc6-4e83-a25e-1360f1bbbede.txt",
+    "text_length": 3778,
+    "chunk_count": 5,
+    "chunk_filename": "8558807d-dfc6-4e83-a25e-1360f1bbbede.json",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimensions": 384
+  },
+  {
+    "document_id": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca",
+    "filename": "ApplicationForm.pdf",
+    "content_type": "application/pdf",
+    "size_bytes": 398700,
+    "status": "processed",
+    "stored_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca_ApplicationForm.pdf",
+    "processed_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca.txt",
+    "text_length": 2586,
+    "chunk_count": 4,
+    "chunk_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca.json",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimensions": 384
   }
 ]
