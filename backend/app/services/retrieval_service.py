@@ -38,7 +38,7 @@ def load_chunks():
             if "embedding" not in chunk:
                 continue
 
-            chunks.append(
+            chunks.append(  #add to the chunk
                 {
                     "document_id": data["document_id"],
                     "chunk_id": chunk["chunk_id"],

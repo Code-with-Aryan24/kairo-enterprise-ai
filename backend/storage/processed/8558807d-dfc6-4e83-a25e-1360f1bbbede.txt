@@ -1,0 +1,71 @@
+      ARYAN PANDEY 
++91 9559287755  |   Linkedln   |  GitHub  |  Gmail  
+CAREER OBJECTIVE 
+Computer Science undergraduate building AI-powered applications and intelligent product features. Skilled 
+in Python, JavaScript, React and Generative AI, with hands-on experience in LLMs, RAG, AI agents, APIs 
+and full-stack development.     
+EDUCATION 
+Pranveer Singh Institute of Technology                                                                               KANPUR, UP                               
+Bachelor of Technology, Computer Science & Engineering | CGPA: 8.3 
+St. Antony’s Inter College​
+​
+​
+​
+​
+​
+​
+         LUCKNOW, UP 
+Intermediate (ISC): 90.25% | High School (ICSE): 95.25% 
+SKILLS 
+Languages: Python, Java, JavaScript, SQL, C 
+AI & Agentic AI: LLMs, Generative AI, RAG, AI Agents, Prompt Engineering, Embeddings 
+Web & Backend: React, FastAPI, REST APIs, Vite 
+Core: Data Structures & Algorithms, Object-Oriented Programming 
+Tools: Git, GitHub, VS Code 
+Enterprise: SAP BTP, SAP Generative AI     
+PROJECTS 
+KAIRO — Enterprise AI / RAG Platform                                               
+• Built an end-to-end enterprise RAG system for document ingestion, PDF extraction, chunking, 
+embeddings, semantic retrieval and grounded LLM response generation. 
+• Developed Python/FastAPI backend services connecting query embeddings, retrieval and Gemini-based 
+generation, with source-backed responses for improved answer grounding. 
+1-1 AI INTERVIEW PREP TOOL                                                                                                     
+• Built an AI-powered interviewer capable of conducting role-specific interviews with conversational context 
+and adaptive follow-up questions.  
+• Integrated LLM-based response generation with voice interaction using Groq/Llama and ElevenLabs 
+text-to-speech.  
+TRUECREDS — Advanced Credential Validation & Storage via BlockDAG 
+• Developed an AI-powered credential verification platform for analyzing and validating digital certificates 
+and project credentials.  
+• Integrated IPFS/Kaspa-inspired verification and BlockDAG anchoring concepts to create secure and 
+verifiable credential records.   
+INTERNSHIPS 
+AI Content and Talent Manager                                                                                     Eye Media Solutions 
+•Coordinated with teams on talent acquisition, strategic stakeholder partnerships and digital marketing 
+activities with brands like Hyundai, KuKu FM, Plix. 
+• Supported operational workflows and stakeholder communication across campaigns.  
+AI Intern                                                                                                                                          Flyrank AI 
+• Worked with emerging AI technologies and workflows, building a practical understanding of how AI can 
+support different business functions. 
+• Designed and maintained APIs for communication across application components and worked with 
+databases to manage application data.  
+ACHIEVEMENTS & LEADERSHIP 
+Finalist & Presenter - TECH EXPO 2K25                                                                             PSIT KANPUR 
+Finalist - Axis Hacksprint                                                                                                     AXIS COLLEGE 
+Joint-Secretary - Core Committee                                                                                       PSIT KANPUR 
+ 
+ 
+
+CERTIFICATIONS 
+●​
+SAP ERP Certified Generative Ai Developer - SAP (view) 
+●​
+AWS Solutions Architect JS - Forage(view) 
+●​
+Product Management - Great Learning (view) 
+●​
+Electronic Arts - Product Management Simulation (view) 
+●​
+Generative Ai Professional - ORACLE OCI (view) 
+●​
+Siemens Mobility - Project Manager Job Simulation (view) 
