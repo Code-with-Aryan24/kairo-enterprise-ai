@@ -16,7 +16,7 @@ class SearchRequest(BaseModel):
 
 
 @router.post("")
-def search(request: SearchRequest):
+def search(request: SearchRequest): #top K distinction
     results = retrieve(
         request.query,
         top_k=request.top_k,
