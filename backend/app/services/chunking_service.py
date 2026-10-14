@@ -1,62 +1,143 @@
+
 def chunk_text(pages, chunk_size=1000, overlap=200):
+    """
+    Create page-aware chunks while preferring line boundaries.
+
+    Each returned chunk contains:
+    - text
+    - page_numbers
+
+    Long lines are split only when they exceed chunk_size.
+    Overlap is preserved where possible without exceeding
+    the configured chunk size.
+    """
     if not pages:
         return []
 
-    chunks = []
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be greater than zero.")
 
-    combined_text = ""
+    if overlap < 0 or overlap >= chunk_size:
+        raise ValueError(
+            "overlap must be non-negative and smaller than chunk_size."
+        )
 
-    page_ranges = []
+    # Keep each line associated with its original PDF page.
+    lines = []
 
     for page in pages:
-        page_text = page["text"].strip()
+        page_number = page["page_number"]
+        page_text = page.get("text", "")
 
-        if not page_text:
-            continue
+        for raw_line in page_text.splitlines():
+            line = raw_line.strip()
 
-        start_position = len(combined_text)
+            if not line:
+                continue
 
-        combined_text += page_text + "\n"
+            # Split unusually long lines into manageable pieces.
+            while len(line) > chunk_size:
+                lines.append(
+                    (line[:chunk_size], page_number)
+                )
+                line = line[chunk_size:]
 
-        end_position = len(combined_text)
+            if line:
+                lines.append((line, page_number))
 
-        page_ranges.append(
+    if not lines:
+        return []
+
+    chunks = []
+    current_lines = []
+    current_length = 0
+
+    def emit_chunk(chunk_lines):
+        if not chunk_lines:
+            return
+
+        text = "\n".join(
+            line for line, _ in chunk_lines
+        ).strip()
+
+        if not text:
+            return
+
+        page_numbers = list(
+            dict.fromkeys(
+                page_number
+                for _, page_number in chunk_lines
+            )
+        )
+
+        chunks.append(
             {
-                "page_number": page["page_number"],
-                "start": start_position,
-                "end": end_position,
+                "text": text,
+                "page_numbers": page_numbers,
             }
         )
 
-    start = 0
-    text_length = len(combined_text)
+    for line, page_number in lines:
+        added_length = len(line) + (
+            1 if current_lines else 0
+        )
 
-    while start < text_length:
-        end = start + chunk_size
+        # If the next line would exceed the chunk size,
+        # emit the current chunk before adding that line.
+        if (
+            current_lines
+            and current_length + added_length > chunk_size
+        ):
+            emit_chunk(current_lines)
 
-        chunk = combined_text[start:end].strip()
+            # Preserve a suffix of previous lines as overlap.
+            overlap_lines = []
+            overlap_length = 0
 
-        if chunk:
-            chunk_page_numbers = []
-
-            for page_range in page_ranges:
-                overlaps_page = (
-                    start < page_range["end"]
-                    and end > page_range["start"]
+            for previous_line, previous_page in reversed(
+                current_lines
+            ):
+                separator_length = (
+                    1 if overlap_lines else 0
+                )
+                candidate_length = (
+                    overlap_length
+                    + separator_length
+                    + len(previous_line)
                 )
 
-                if overlaps_page:
-                    chunk_page_numbers.append(
-                        page_range["page_number"]
-                    )
+                # Reserve room for the next line.
+                required_length = (
+                    candidate_length
+                    + 1
+                    + len(line)
+                )
 
-            chunks.append(
-                {
-                    "text": chunk,
-                    "page_numbers": chunk_page_numbers,
-                }
-            )
+                if (
+                    candidate_length > overlap
+                    or required_length > chunk_size
+                ):
+                    break
 
-        start += chunk_size - overlap
+                overlap_lines.append(
+                    (previous_line, previous_page)
+                )
+                overlap_length = candidate_length
+
+            overlap_lines.reverse()
+            current_lines = overlap_lines
+
+            current_length = sum(
+                len(previous_line)
+                for previous_line, _ in current_lines
+            ) + max(0, len(current_lines) - 1)
+
+        separator_length = 1 if current_lines else 0
+
+        current_lines.append((line, page_number))
+        current_length += separator_length + len(line)
+
+    # Emit the final chunk.
+    emit_chunk(current_lines)
 
     return chunks

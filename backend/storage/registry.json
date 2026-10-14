@@ -73,7 +73,7 @@
     "status": "processed",
     "stored_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca_ApplicationForm.pdf",
     "processed_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca.txt",
-    "text_length": 2586,
+    "text_length": 3383,
     "chunk_count": 4,
     "chunk_filename": "9cfbbb17-2d22-4d25-93d0-a3fbba8422ca.json",
     "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",

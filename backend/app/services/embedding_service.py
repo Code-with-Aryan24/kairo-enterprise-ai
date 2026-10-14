@@ -3,8 +3,7 @@ from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
-model = SentenceTransformer(MODEL_NAME) //dynamic model selection space
-
+model = SentenceTransformer(MODEL_NAME) 
 
 def embed_text(text):
     embedding = model.encode(
