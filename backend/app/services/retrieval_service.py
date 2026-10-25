@@ -10,6 +10,7 @@ from app.services.embedding_service import embed_text
 
 CHUNKS_DIR = Path("storage/chunks")
 
+
 # Common words that add little value to keyword matching.
 STOPWORDS = {
     "a", "an", "the", "is", "are", "was", "were",
@@ -23,8 +24,20 @@ STOPWORDS = {
 
 
 def cosine_similarity(vector_a, vector_b):
-    vector_a = np.array(vector_a, dtype=float)
-    vector_b = np.array(vector_b, dtype=float)
+    """Calculate cosine similarity between two vectors."""
+    vector_a = np.asarray(vector_a, dtype=float)
+    vector_b = np.asarray(vector_b, dtype=float)
+
+    # Vectors must have matching dimensions.
+    if vector_a.shape != vector_b.shape:
+        return 0.0
+
+    # Reject invalid numeric values.
+    if (
+        not np.all(np.isfinite(vector_a))
+        or not np.all(np.isfinite(vector_b))
+    ):
+        return 0.0
 
     denominator = (
         np.linalg.norm(vector_a)
@@ -40,9 +53,11 @@ def cosine_similarity(vector_a, vector_b):
 
 
 def load_chunks():
+    """Load valid chunks and skip those with invalid embeddings."""
     chunks = []
 
     if not CHUNKS_DIR.exists():
+        print(f"Chunks directory not found: {CHUNKS_DIR}")
         return chunks
 
     for chunk_file in CHUNKS_DIR.glob("*.json"):
@@ -57,23 +72,74 @@ def load_chunks():
             )
             continue
 
+        document_id = data.get("document_id")
+
+        if not document_id:
+            print(
+                f"Skipping {chunk_file.name}: "
+                "document ID is missing."
+            )
+            continue
+
         for chunk in data.get("chunks", []):
-            # Ignore legacy chunks without embeddings.
-            if "embedding" not in chunk:
+            embedding = chunk.get("embedding")
+
+            # Skip missing or empty embeddings.
+            if not isinstance(embedding, list) or not embedding:
+                print(
+                    f"Skipping chunk {chunk.get('chunk_id')} "
+                    f"in {chunk_file.name}: "
+                    "missing or invalid embedding."
+                )
+                continue
+
+            try:
+                vector = np.asarray(embedding, dtype=float)
+            except (TypeError, ValueError):
+                print(
+                    f"Skipping chunk {chunk.get('chunk_id')} "
+                    f"in {chunk_file.name}: "
+                    "embedding is not numeric."
+                )
+                continue
+
+            # Embeddings must be finite, one-dimensional vectors.
+            if (
+                vector.ndim != 1
+                or not np.all(np.isfinite(vector))
+            ):
+                print(
+                    f"Skipping chunk {chunk.get('chunk_id')} "
+                    f"in {chunk_file.name}: "
+                    "malformed embedding vector."
+                )
+                continue
+
+            # Skip empty text or chunks without an ID.
+            if (
+                not isinstance(chunk.get("text"), str)
+                or not chunk["text"].strip()
+                or "chunk_id" not in chunk
+            ):
+                print(
+                    f"Skipping malformed chunk "
+                    f"in {chunk_file.name}."
+                )
                 continue
 
             chunks.append(
                 {
-                    "document_id": data["document_id"],
+                    "document_id": document_id,
                     "chunk_id": chunk["chunk_id"],
                     "text": chunk["text"],
                     "page_numbers": chunk.get(
                         "page_numbers", []
                     ),
-                    "embedding": chunk["embedding"],
+                    "embedding": vector.tolist(),
                 }
             )
 
+    print(f"Loaded {len(chunks)} valid chunks.")
     return chunks
 
 
@@ -92,12 +158,7 @@ def meaningful_tokens(text):
 
 
 def keyword_score(query, text):
-    """
-    Score meaningful query-word overlap.
-
-    Uses meaningful query tokens as the denominator so common
-    words do not dilute the score.
-    """
+    """Score meaningful query-word overlap."""
     query_words = set(meaningful_tokens(query))
     text_words = set(meaningful_tokens(text))
 
@@ -109,19 +170,17 @@ def keyword_score(query, text):
     return len(matched_words) / len(query_words)
 
 
+
 def field_match_bonus(query, text):
     """
-    Give a modest ranking boost to chunks likely to contain
-    the requested document field.
-
-    This improves ranking; it does not infer or invent values.
+    Prioritize chunks containing actual qualification details
+    and down-rank chunks that only mention eligibility rules.
     """
     query_text = query.lower()
     document_text = text.lower()
 
     bonus = 0.0
 
-    # Qualifying-degree / education questions.
     degree_query = any(
         phrase in query_text
         for phrase in (
@@ -129,46 +188,54 @@ def field_match_bonus(query, text):
             "degree",
             "graduation",
             "educational qualification",
+            "education qualification",
+            "what degree",
         )
     )
 
     if degree_query:
-        education_indicators = (
-            "graduated",
-            "year of graduation",
-            "computer science",
-            "engineering",
-            "engg",
-            "b.tech",
-            "b. tech",
-            "bachelor",
-            "degree",
-            "diploma",
-            "qualification",
+        # Strong evidence that the chunk contains the actual degree.
+        degree_patterns = (
+            r"\bb\.?\s*tech\.?\b",
+            r"\bbtech\b",
+            r"\bbachelor\b",
+            r"\bcomputer science\b",
+            r"\bengineering\b",
+            r"\bengg\b",
+            r"\byear of graduation\b",
         )
 
-        matched_indicators = sum(
+        matched_patterns = sum(
             1
-            for indicator in education_indicators
-            if indicator in document_text
+            for pattern in degree_patterns
+            if re.search(pattern, document_text)
         )
 
-        # Reward chunks with actual education details more
-        # than chunks that only mention eligibility requirements.
-        if matched_indicators >= 2:
-            bonus += 0.15
-        elif any(
-            indicator in document_text
-            for indicator in (
-                "graduated",
-                "year of graduation",
-                "computer science",
-                "bachelor",
-                "b.tech",
-                "b. tech",
+        # Reward chunks with actual education information.
+        if matched_patterns >= 3:
+            bonus += 0.30
+        elif matched_patterns >= 1:
+            bonus += 0.18
+
+        # Penalize generic eligibility declarations when they
+        # mention degree requirements but contain no actual degree.
+        eligibility_only = (
+            "qualifying degree" in document_text
+            and not any(
+                re.search(pattern, document_text)
+                for pattern in (
+                    r"\bb\.?\s*tech\.?\b",
+                    r"\bbtech\b",
+                    r"\bbachelor\b",
+                    r"\bdiploma\b",
+                    r"\bcomputer science\b",
+                    r"\byear of graduation\b",
+                )
             )
-        ):
-            bonus += 0.08
+        )
+
+        if eligibility_only:
+            bonus -= 0.20
 
     # GATE paper-code questions.
     code_query = (
@@ -179,24 +246,66 @@ def field_match_bonus(query, text):
     if code_query:
         if "paper code" in document_text:
             bonus += 0.15
-        elif "gate" in document_text and re.search(
-            r"\b(?:cs|ec|ee|me|ce|da|ma|ph|ch)\b",
-            document_text,
+        elif (
+            "gate" in document_text
+            and re.search(
+                r"\b(?:cs|ec|ee|me|ce|da|ma|ph|ch)\b",
+                document_text,
+            )
         ):
             bonus += 0.08
 
     return bonus
 
 
-def retrieve(query, top_k=3, min_score=0.30):
+
+
+def retrieve(
+    query,
+    top_k=3,
+    min_score=0.30,
+    document_id=None,
+):
+    """
+    Retrieve relevant chunks globally or from a specific document.
+
+    If document_id is supplied, chunks from other documents
+    are excluded before scoring and ranking.
+    """
+    if not isinstance(query, str) or not query.strip():
+        return []
+
+    if top_k < 1:
+        return []
+
     query_embedding = embed_text(query)
+    query_vector = np.asarray(query_embedding, dtype=float)
+
+    if (
+        query_vector.ndim != 1
+        or query_vector.size == 0
+        or not np.all(np.isfinite(query_vector))
+    ):
+        raise ValueError("Query embedding is empty or invalid.")
+
     chunks = load_chunks()
+
+    # Apply document filtering before ranking.
+    if document_id is not None:
+        chunks = [
+            chunk
+            for chunk in chunks
+            if chunk["document_id"] == document_id
+        ]
+
+        print(f"Document filter enabled: {document_id}")
+        print(f"Chunks in selected document: {len(chunks)}")
 
     scored_chunks = []
 
     for chunk in chunks:
         semantic_score = cosine_similarity(
-            query_embedding,
+            query_vector,
             chunk["embedding"],
         )
 
@@ -240,4 +349,19 @@ def retrieve(query, top_k=3, min_score=0.30):
         if chunk["score"] >= min_score
     ]
 
-    return filtered_chunks[:top_k]
+    results = filtered_chunks[:top_k]
+
+    print("\n--- KAIRO RETRIEVAL DEBUG ---")
+
+    for chunk in results:
+        print("Document ID:", chunk["document_id"])
+        print("Chunk ID:", chunk["chunk_id"])
+        print("Pages:", chunk["page_numbers"])
+        print(f"Score: {chunk['score']:.4f}")
+        print(f"Semantic score: {chunk['semantic_score']:.4f}")
+        print(f"Keyword score: {chunk['keyword_score']:.4f}")
+        print(f"Field bonus: {chunk['field_bonus']:.4f}")
+        print("Content:", repr(chunk["text"]))
+        print("-" * 20)
+
+    return results

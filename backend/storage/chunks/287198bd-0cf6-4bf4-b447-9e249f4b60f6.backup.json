@@ -1,0 +1,15 @@
+{
+  "document_id": "287198bd-0cf6-4bf4-b447-9e249f4b60f6",
+  "chunk_size": 1000,
+  "overlap": 200,
+  "chunks": [
+    {
+      "chunk_id": 0,
+      "text": "Transaction Acknowledgment\nTransaction Acknowledgment\nPayment Status\nPayment Status\nSuccess\nSuccess\nIBPS Transaction ID\nIBPS Transaction ID\ncsaxvijul26LV2710459991v1\ncsaxvijul26LV2710459991v1\nPayment Date\nPayment Date\n11-08-2026 23:35:03\n11-08-2026 23:35:03\nApplication Fee (Rs.Ps)\nApplication Fee (Rs.Ps)\nRs.\nRs.850.00\n850.00\nPayment Gateway Transaction ID\nPayment Gateway Transaction ID\nDHD5QY01SMOGN8\nDHD5QY01SMOGN8\nDear Candidate,\nDear Candidate,\nThank you for your payment. Please refer details of this transaction:\nThank you for your payment. Please refer details of this transaction:\n\u00a0\n\u00a0\u00a0\u00a0\u00a0\u00a0Print\u00a0\u00a0\u00a0\u00a0\u00a0\n\u00a0\u00a0\u00a0\u00a0\u00a0Print\u00a0\u00a0\u00a0\u00a0\u00a0\n\u00a0\nPlease quote your Transaction ID for any queries relating to this request.\nPlease quote your Transaction ID for any queries relating to this request.\nKindly note:\nKindly note:\nTo print your E-Receipt or your Application after a successful payment, please visit the Registration Portal at\nTo print your E-Receipt or your Application after a successful payment, please visit"
+    },
+    {
+      "chunk_id": 1,
+      "text": "e:\nTo print your E-Receipt or your Application after a successful payment, please visit the Registration Portal at\nTo print your E-Receipt or your Application after a successful payment, please visit the Registration Portal at\nibpsreg.ibps.in/csaxvijul26\nibpsreg.ibps.in/csaxvijul26\nYou also receive an SMS / Email notification with regards to your application.\nYou also receive an SMS / Email notification with regards to your application.\n8/11/26, 11:35 PM\n:: BillDesk Payment Gateway ::\nhttps://www.billdesk.com/pgidsk/pgmerc/IBPSNFResponse.jsp\n1/1"
+    }
+  ]
+}

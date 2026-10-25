@@ -211,13 +211,15 @@ def generate_answer(
 def generate_rag_answer(
     query: str,
     top_k: int = 3,
+    document_id: str | None = None,
 ):
     from app.services.retrieval_service import retrieve
 
     contexts = retrieve(
-        query,
-        top_k=top_k,
-    )
+    query,
+    top_k=top_k,
+    document_id=document_id,
+)
 
     # DEBUG: inspect the exact text retrieved from the documents.
     print("\n--- KAIRO RETRIEVAL DEBUG ---")
