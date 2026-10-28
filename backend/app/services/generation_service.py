@@ -235,16 +235,6 @@ def generate_rag_answer(
 )
 
     # DEBUG: inspect the exact text retrieved from the documents.
-    print("\n--- KAIRO RETRIEVAL DEBUG ---")
-
-    for context in contexts:
-        print("Document ID:", context.get("document_id"))
-        print("Chunk ID:", context.get("chunk_id"))
-        print("Pages:", context.get("page_numbers"))
-        print("Score:", context.get("score"))
-        print("Content:", repr(context.get("text")))
-        print("-----------------------------")
-
     if not contexts:
         return {
             "answer": (

@@ -52,6 +52,7 @@ def cosine_similarity(vector_a, vector_b):
     )
 
 
+
 def load_chunks():
     """Load valid chunks and skip those with invalid embeddings."""
     chunks = []
@@ -61,6 +62,9 @@ def load_chunks():
         return chunks
 
     for chunk_file in CHUNKS_DIR.glob("*.json"):
+        if chunk_file.name.endswith(".backup.json"):
+            continue
+
         try:
             data = json.loads(
                 chunk_file.read_text(encoding="utf-8")
