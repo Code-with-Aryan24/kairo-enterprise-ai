@@ -28,11 +28,9 @@ def cosine_similarity(vector_a, vector_b):
     vector_a = np.asarray(vector_a, dtype=float)
     vector_b = np.asarray(vector_b, dtype=float)
 
-    # Vectors must have matching dimensions.
     if vector_a.shape != vector_b.shape:
         return 0.0
 
-    # Reject invalid numeric values.
     if (
         not np.all(np.isfinite(vector_a))
         or not np.all(np.isfinite(vector_b))
@@ -47,10 +45,7 @@ def cosine_similarity(vector_a, vector_b):
     if denominator == 0:
         return 0.0
 
-    return float(
-        np.dot(vector_a, vector_b) / denominator
-    )
-
+    return float(np.dot(vector_a, vector_b) / denominator)
 
 
 def load_chunks():
@@ -62,6 +57,7 @@ def load_chunks():
         return chunks
 
     for chunk_file in CHUNKS_DIR.glob("*.json"):
+        # Do not load backup files as active document data.
         if chunk_file.name.endswith(".backup.json"):
             continue
 
@@ -88,7 +84,6 @@ def load_chunks():
         for chunk in data.get("chunks", []):
             embedding = chunk.get("embedding")
 
-            # Skip missing or empty embeddings.
             if not isinstance(embedding, list) or not embedding:
                 print(
                     f"Skipping chunk {chunk.get('chunk_id')} "
@@ -107,7 +102,6 @@ def load_chunks():
                 )
                 continue
 
-            # Embeddings must be finite, one-dimensional vectors.
             if (
                 vector.ndim != 1
                 or not np.all(np.isfinite(vector))
@@ -119,7 +113,6 @@ def load_chunks():
                 )
                 continue
 
-            # Skip empty text or chunks without an ID.
             if (
                 not isinstance(chunk.get("text"), str)
                 or not chunk["text"].strip()
@@ -136,9 +129,7 @@ def load_chunks():
                     "document_id": document_id,
                     "chunk_id": chunk["chunk_id"],
                     "text": chunk["text"],
-                    "page_numbers": chunk.get(
-                        "page_numbers", []
-                    ),
+                    "page_numbers": chunk.get("page_numbers") or [],
                     "embedding": vector.tolist(),
                 }
             )
@@ -159,6 +150,7 @@ def meaningful_tokens(text):
         for token in tokenize(text)
         if token not in STOPWORDS
     ]
+
 
 
 def keyword_score(query, text):
@@ -182,10 +174,9 @@ def field_match_bonus(query, text):
     """
     query_text = query.lower()
     document_text = text.lower()
-
     bonus = 0.0
 
-    degree_query = any(
+    degree_query = any(       #used for specific phrases 
         phrase in query_text
         for phrase in (
             "qualifying degree",
@@ -198,7 +189,6 @@ def field_match_bonus(query, text):
     )
 
     if degree_query:
-        # Strong evidence that the chunk contains the actual degree.
         degree_patterns = (
             r"\bb\.?\s*tech\.?\b",
             r"\bbtech\b",
@@ -215,14 +205,11 @@ def field_match_bonus(query, text):
             if re.search(pattern, document_text)
         )
 
-        # Reward chunks with actual education information.
         if matched_patterns >= 3:
             bonus += 0.30
         elif matched_patterns >= 1:
             bonus += 0.18
 
-        # Penalize generic eligibility declarations when they
-        # mention degree requirements but contain no actual degree.
         eligibility_only = (
             "qualifying degree" in document_text
             and not any(
@@ -260,8 +247,6 @@ def field_match_bonus(query, text):
             bonus += 0.08
 
     return bonus
-
-
 
 
 def retrieve(
@@ -347,17 +332,13 @@ def retrieve(
         reverse=True,
     )
 
-    filtered_chunks = [
-        chunk
-        for chunk in scored_chunks
-        if chunk["score"] >= min_score
-    ]
-
-    results = filtered_chunks[:top_k]
-
+    # Diagnostic output: show scores BEFORE threshold filtering.
     print("\n--- KAIRO RETRIEVAL DEBUG ---")
+    print("Query:", query)
+    print("Minimum score:", min_score)
+    print("Scored candidates:", len(scored_chunks))
 
-    for chunk in results:
+    for chunk in scored_chunks:
         print("Document ID:", chunk["document_id"])
         print("Chunk ID:", chunk["chunk_id"])
         print("Pages:", chunk["page_numbers"])
@@ -367,5 +348,16 @@ def retrieve(
         print(f"Field bonus: {chunk['field_bonus']:.4f}")
         print("Content:", repr(chunk["text"]))
         print("-" * 20)
+
+    filtered_chunks = [
+        chunk
+        for chunk in scored_chunks
+        if chunk["score"] >= min_score
+    ]
+
+    results = filtered_chunks[:top_k]
+
+    print("Candidates above threshold:", len(filtered_chunks))
+    print("Chunks returned:", len(results))
 
     return results
