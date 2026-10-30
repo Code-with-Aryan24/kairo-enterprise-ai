@@ -16,7 +16,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/knowledge" element={<Knowledge />} />
           <Route path="/documents" element={<Documents />} />
-          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/analytics" element={<Analytics />} /> #page for doc analytics
         </Routes>
       </MainLayout>
     </BrowserRouter>
