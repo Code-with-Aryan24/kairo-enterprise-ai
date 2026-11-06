@@ -176,7 +176,7 @@ def field_match_bonus(query, text):
     document_text = text.lower()
     bonus = 0.0
 
-    degree_query = any(       #used for specific phrases 
+    degree_query = any(       #used for specific phrases
         phrase in query_text
         for phrase in (
             "qualifying degree",
@@ -249,6 +249,106 @@ def field_match_bonus(query, text):
     return bonus
 
 
+# Month names used to recognize employment date ranges.
+MONTH_PATTERN = (
+    r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
+    r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|"
+    r"Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?"
+)
+
+DATE_RANGE_PATTERN = re.compile(
+    rf"\b(?:{MONTH_PATTERN})\s+\d{{4}}\s*[-–]\s*"
+    rf"(?:(?:{MONTH_PATTERN})\s+\d{{4}}|Present|Current)\b",
+    re.IGNORECASE,
+)
+
+EMPLOYMENT_TERMS = {
+    "employment",
+    "experience",
+    "professional",
+    "work",
+    "job",
+    "jobs",
+    "role",
+    "roles",
+    "position",
+    "positions",
+    "internship",
+    "internships",
+    "career",
+    "careers",
+}
+
+ROLE_EVIDENCE_PATTERN = re.compile(
+    r"\b("
+    r"intern|internship|manager|treasurer|"
+    r"secretary|partner|analyst|engineer|"
+    r"developer|consultant|associate|"
+    r"coordinator|executive|director|"
+    r"lead|assistant|videography|"
+    r"content creation|"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+
+
+def is_employment_query(query):
+    """Identify questions specifically about employment history."""
+
+    tokens = set(tokenize(query))
+
+    direct_employment_terms = {
+        "employment",
+        "job",
+        "jobs",
+        "role",
+        "roles",
+        "position",
+        "positions",
+        "internship",
+        "internships",
+        "career",
+        "careers",
+    }
+
+    if tokens.intersection(direct_employment_terms):
+        return True
+
+    experience_terms = {
+        "experience",
+        "professional",
+    }
+
+    date_terms = {
+        "date",
+        "dates",
+        "duration",
+        "durations",
+        "tenure",
+        "timeline",
+        "timelines",
+    }
+
+    return (
+        bool(tokens.intersection(experience_terms))
+        and bool(tokens.intersection(date_terms))
+    )
+
+
+
+
+def has_employment_evidence(text):
+    """Check whether a chunk contains both a date range and role evidence."""
+    has_dates = bool(DATE_RANGE_PATTERN.search(text))
+    has_role = bool(ROLE_EVIDENCE_PATTERN.search(text))
+
+    return has_dates and has_role
+
+
+
+
 def retrieve(
     query,
     top_k=3,
@@ -256,11 +356,11 @@ def retrieve(
     document_id=None,
 ):
     """
-    Retrieve relevant chunks globally or from a specific document.
-
-    If document_id is supplied, chunks from other documents
-    are excluded before scoring and ranking.
+    Uses normal relevance filtering first. For employment-history
+    questions, a conservative evidence-based fallback can recover
+    chunks containing both employment date ranges and role evidence.
     """
+
     if not isinstance(query, str) or not query.strip():
         return []
 
@@ -332,13 +432,59 @@ def retrieve(
         reverse=True,
     )
 
-    # Diagnostic output: show scores BEFORE threshold filtering.
+    # Normal retrieval remains the primary strategy.
+    filtered_chunks = [
+        chunk
+        for chunk in scored_chunks
+        if chunk["score"] >= min_score
+    ]
+
+    results = filtered_chunks[:top_k]
+
+    fallback_used = False
+
+    # Employment-specific fallback:
+    # Only activate when normal retrieval returns insufficient results.
+    if (
+        is_employment_query(query)
+        and len(results) < top_k
+    ):
+        existing_ids = {
+            (chunk["document_id"], chunk["chunk_id"])
+            for chunk in results
+        }
+
+        fallback_candidates = [
+            chunk
+            for chunk in scored_chunks
+            if (
+                (chunk["document_id"], chunk["chunk_id"])
+                not in existing_ids
+                and chunk["semantic_score"] >= 0.15
+                and has_employment_evidence(chunk["text"])
+            )
+        ]
+
+        fallback_candidates.sort(
+            key=lambda item: item["score"],
+            reverse=True,
+        )
+
+        if fallback_candidates:
+            fallback_used = True
+            results.extend(
+                fallback_candidates[:top_k - len(results)]
+            )
+
     print("\n--- KAIRO RETRIEVAL DEBUG ---")
     print("Query:", query)
     print("Minimum score:", min_score)
     print("Scored candidates:", len(scored_chunks))
+    print("Candidates above threshold:", len(filtered_chunks))
+    print("Employment fallback used:", fallback_used)
+    print("Chunks returned:", len(results))
 
-    for chunk in scored_chunks:
+    for chunk in results:
         print("Document ID:", chunk["document_id"])
         print("Chunk ID:", chunk["chunk_id"])
         print("Pages:", chunk["page_numbers"])
@@ -348,16 +494,5 @@ def retrieve(
         print(f"Field bonus: {chunk['field_bonus']:.4f}")
         print("Content:", repr(chunk["text"]))
         print("-" * 20)
-
-    filtered_chunks = [
-        chunk
-        for chunk in scored_chunks
-        if chunk["score"] >= min_score
-    ]
-
-    results = filtered_chunks[:top_k]
-
-    print("Candidates above threshold:", len(filtered_chunks))
-    print("Chunks returned:", len(results))
 
     return results
