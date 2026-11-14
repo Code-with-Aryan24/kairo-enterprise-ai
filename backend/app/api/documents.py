@@ -102,6 +102,7 @@ async def upload_document(file: UploadFile = File(...)):
                 "chunk_id": index,
                 "text": chunk["text"],
                 "page_numbers": chunk["page_numbers"],
+                "page_segments": chunk.get("page_segments", []),
                 "embedding": embeddings[index],
             }
             for index, chunk in enumerate(chunks)

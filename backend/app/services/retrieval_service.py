@@ -125,14 +125,15 @@ def load_chunks():
                 continue
 
             chunks.append(
-                {
-                    "document_id": document_id,
-                    "chunk_id": chunk["chunk_id"],
-                    "text": chunk["text"],
-                    "page_numbers": chunk.get("page_numbers") or [],
-                    "embedding": vector.tolist(),
-                }
-            )
+    {
+        "document_id": document_id,
+        "chunk_id": chunk["chunk_id"],
+        "text": chunk["text"],
+        "page_numbers": chunk.get("page_numbers") or [],
+        "page_segments": chunk.get("page_segments") or [],
+        "embedding": vector.tolist(),
+    }
+)
 
     print(f"Loaded {len(chunks)} valid chunks.")
     return chunks
@@ -420,6 +421,7 @@ def retrieve(
                 "chunk_id": chunk["chunk_id"],
                 "text": chunk["text"],
                 "page_numbers": chunk["page_numbers"],
+                "page_segments": chunk["page_segments"],
                 "score": combined_score,
                 "semantic_score": semantic_score,
                 "keyword_score": lexical_score,
